@@ -1,0 +1,75 @@
+ systemd 自启动
+(1)编写脚本测试
+vi   /home/test.sh
+
+#！/bin/bash
+echo "system reboot time" >> /home/output.txt
+data >> /home/out.txt
+chmod +x  /home/test.sh
+
+测试
+ll  /home/test.sh
+cat /home/output.txt
+
+（2）systemd  开机自启动办法
+cd   /etc/systemd/system/
+ls  查看服务
+写服务
+vi  test.service
+
+[Unit]
+Description=record system  reboot time
+
+[Service]
+ExecStart=/home/test.sh
+
+[Install]
+WantedBy=default.target
+
+（3）使能
+systemctl  daemon-reload
+systemctl  enable  test.service
+systemctl  start  test.service
+systemctl  status test.service
+
+reboot验证
+cat  /home/output.txt
+
+取消方法
+systemctl disable test.service
+reboot 验证
+cat  /home/output.txt
+不需要的话  rm  /etc/systemd/system/test.service
+
+rc.local 自启动
+（1）使用、etc/rc.d/rc.local
+
+vi  /etc/rc.d/rc.local
+在最后一行添加
+/home/test.sh
+
+查看文件权限
+ ll   /etc/rc.d/rc.local
+发现没有执行权限，需要添加
+chmod +x  /etc/rc.d/rc.local
+查看文件权限
+ ll   /etc/rc.d/rc.local
+
+取消方法
+vi  /etc/rc.d/rc.local
+删除最后一行
+reboot 验证
+
+
+crontab定时启动
+（1）crontab  -e
+@reboot  /home/test.sh
+cat   /home/output.txt
+reboot
+
+取消方法
+crontab  -e
+删除刚才添加内容
+reboot验证
+
+
